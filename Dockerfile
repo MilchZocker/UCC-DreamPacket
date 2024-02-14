@@ -10,12 +10,9 @@
 	# Get git to get good
 	RUN apt-get install git -y
 
-	# Set ENV for Repository extract
-	WORKDIR "/debian/Desktop"
-	RUN git clone https://github.com/MilchZocker/UCC-DreamPacket --progress
-	
-	# Move to Repository directory
+	# Copy repository content to container
 	WORKDIR "/debian/Desktop/UCC-DreamPacket/Dream Packet"
+	COPY ["./Dream Packet/", "./"]
 
 	# Begin setup for Python
 	RUN pip install --upgrade pip
