@@ -74,9 +74,8 @@ def set_sentence_data(ip_hash, **kwargs):
   return (sentence, age)
 
 
-def create_video(image_path):
+def create_video(image_path=DEFAULT_IMAGE):
   logging.debug('CREATING VIDEO')
-  image_path = image_path or DEFAULT_IMAGE
   
   logging.debug('image_path %s', image_path)
   

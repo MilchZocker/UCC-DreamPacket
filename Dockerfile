@@ -15,5 +15,5 @@
 	RUN pip install --upgrade pip
 	RUN pip install Pillow Flask opencv-python Werkzeug requests
 
-	# Lauch Dream Packet
+	# Launch Dream Packet
 	CMD ["python", "cvr-r-dream-backend.py"]
