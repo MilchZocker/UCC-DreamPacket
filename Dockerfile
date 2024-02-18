@@ -8,7 +8,7 @@
 	RUN apt-get install -y libgl1-mesa-glx
 
 	# Set ENV for Repository extract
-	WORKDIR "/Dream Packet"
+	WORKDIR "/dreampacket"
 	COPY ["./Dream Packet/", "./"]
 	
 	# Begin setup for Python
