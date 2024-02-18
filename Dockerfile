@@ -17,7 +17,6 @@
 	
 	# Switch to persistent directory
 	WORKDIR /app
-	CMD python /dreampacket/cvr-r-dream-backend.py
 
 	# Launch Dream Packet
 	CMD python /dreampacket/cvr-r-dream-backend.py
