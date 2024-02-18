@@ -7,16 +7,14 @@
 	# Nessesary for cv2
 	RUN apt-get install -y libgl1-mesa-glx
 
-	# Execution ENV
-	WORKDIR ./dreampacket
+	# Set ENV for Repository extract
+	RUN mkdir /app
+	WORKDIR /dreampacket
 	COPY ["./Dream Packet/", "./"]
 	
 	# Begin setup for Python
 	RUN pip install --upgrade pip
 	RUN pip install Pillow Flask opencv-python Werkzeug requests
 	
-	# Switch to persistent directory
-	WORKDIR ./app
-
 	# Launch Dream Packet
-	CMD python ./dreampacket/cvr-r-dream-backend.py
+	CMD python /dreampacket/cvr-r-dream-backend.py
