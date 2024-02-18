@@ -8,7 +8,7 @@
 	RUN apt-get install -y libgl1-mesa-glx
 
 	# Execution ENV
-	WORKDIR /dreampacket
+	WORKDIR ./dreampacket
 	COPY ["./Dream Packet/", "./"]
 	
 	# Begin setup for Python
@@ -16,7 +16,7 @@
 	RUN pip install Pillow Flask opencv-python Werkzeug requests
 	
 	# Switch to persistent directory
-	WORKDIR /app
+	WORKDIR ./app
 
 	# Launch Dream Packet
-	CMD python /dreampacket/cvr-r-dream-backend.py
+	CMD python ./dreampacket/cvr-r-dream-backend.py
