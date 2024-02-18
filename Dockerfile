@@ -1,22 +1,20 @@
-	FROM python:3.13.0a3-bookworm
+FROM python:3.9-slim-buster
 
-	# Updating system packages
-	RUN apt-get update
-	RUN apt-get upgrade
-	
-	# Nessesary for cv2
-	RUN apt-get install -y libgl1-mesa-glx
+# Install required fonts
+RUN sed -i'.bak' 's/$/ contrib/' /etc/apt/sources.list
+RUN apt-get update && apt-get install -y ttf-mscorefonts-installer fontconfig
 
-	# Get git to get good
-	RUN apt-get install git -y
+# Nessesary for cv2
+RUN apt-get install -y libsm6 libxext6 ffmpeg libfontconfig1 libxrender1 libgl1-mesa-glx
 
-	# Copy repository content to container
-	WORKDIR "/debian/Desktop/UCC-DreamPacket/Dream Packet"
-	COPY ["./Dream Packet/", "./"]
+# Copy repository content to container
+WORKDIR "/debian/Desktop/UCC-DreamPacket/Dream Packet"
+COPY ["./Dream Packet/", "./"]
 
-	# Begin setup for Python
-	RUN pip install --upgrade pip
-	RUN pip install Pillow Flask opencv-python Werkzeug
+# Begin setup for Python
+RUN pip install -r requirements.txt
 
-	# Lauch Dream Packet
-	CMD ["python", "cvr-r-dream-backend.py"]
+EXPOSE 5000
+
+# Lauch Dream Packet
+CMD python cvr-r-dream-backend.py
