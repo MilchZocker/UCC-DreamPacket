@@ -173,8 +173,11 @@ def get_video(channel):
 
 @app.route('/dream/image/<name>')
 def get_image(name):
-  create_video(f'{IMAGE_PATH}{name}')
-  return get_video()
+    ip_hash = get_ip_hash()
+    _, _, channel = get_sentence_data(ip_hash)
+    create_video(f'{IMAGE_PATH}{name}')
+    return get_video(channel)
+
 
 @app.route('/dream/<instruction>')
 def video(instruction):
@@ -204,7 +207,7 @@ def video(instruction):
     
     # When in the process of writing something we want to show the work-in-progress
     # word instead of the last generated image
-    return get_video()
+    return get_video(channel)
   elif mode == 'g':
     if not can_generate_image(age):
       return get_video(channel)
