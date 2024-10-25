@@ -30,7 +30,7 @@ API_KEY_ENVIRONMENT_VARIABLE = 'API_AUTH_KEY'
 IMAGE_SIZE = 1024
 
 # a value of < 1 disables the cooldown
-COOLDOWN_IN_SECONDS = 0.4
+COOLDOWN_IN_SECONDS = 1
 
 # Track last inputs per user
 last_inputs = defaultdict(lambda: {'letter': None, 'time': 0})
