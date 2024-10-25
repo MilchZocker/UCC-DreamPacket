@@ -11,6 +11,7 @@ import logging
 import hashlib
 from pathlib import Path
 from time import time
+from collections import defaultdict
 
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
@@ -29,7 +30,10 @@ API_KEY_ENVIRONMENT_VARIABLE = 'API_AUTH_KEY'
 IMAGE_SIZE = 1024
 
 # a value of < 1 disables the cooldown
-COOLDOWN_IN_SECONDS = 1
+COOLDOWN_IN_SECONDS = 0.4
+
+# Track last inputs per user
+last_inputs = defaultdict(lambda: {'letter': None, 'time': 0})
 
 
 def get_video_path(channel):
@@ -181,47 +185,58 @@ def get_image(name):
 
 @app.route('/dream/<instruction>')
 def video(instruction):
-  ip_hash = get_ip_hash()
+    ip_hash = get_ip_hash()
 
-  mode, data = parse_instruction(instruction)
-  logging.debug('%s - %s', mode, data)
+    mode, data = parse_instruction(instruction)
+    logging.debug('%s - %s', mode, data)
 
-  sentence, age, channel = get_sentence_data(ip_hash)
+    sentence, age, channel = get_sentence_data(ip_hash)
 
-  if mode == 'w':
-    if data is None:
-      return get_video(channel)
+    if mode == 'w':
+        if data is None:
+            return get_video(channel)
 
-    if not can_generate_image(age):
-      return get_video(channel)
-    
-    sentence, age, channel = set_sentence_data(ip_hash, letter = data, age = time())
-    image = Image.new('RGB', (IMAGE_SIZE, IMAGE_SIZE), "black")
-    I1 = ImageDraw.Draw(image)
-    
-    font = ImageFont.truetype("arial.ttf", 64)
-    
-    I1.text((1, 1), sentence, font=font, fill=(255, 255, 255))
-    image.save(WORKING_IMAGE)
-    create_video(WORKING_IMAGE, get_video_path(channel))
-    
-    # When in the process of writing something we want to show the work-in-progress
-    # word instead of the last generated image
+        # Check if this is a repeated input within cooldown
+        current_time = time()
+        user_last_input = last_inputs[ip_hash]
+        
+        if (data == user_last_input['letter'] and 
+            current_time - user_last_input['time'] < COOLDOWN_IN_SECONDS):
+            # Ignore repeated input during cooldown but keep existing text
+            return get_video(channel)
+        
+        # Update last input data
+        last_inputs[ip_hash] = {
+            'letter': data,
+            'time': current_time
+        }
+        
+        # Process the input normally
+        sentence, age, channel = set_sentence_data(ip_hash, letter=data, age=current_time)
+        image = Image.new('RGB', (IMAGE_SIZE, IMAGE_SIZE), "black")
+        I1 = ImageDraw.Draw(image)
+        
+        font = ImageFont.truetype("arial.ttf", 64)
+        
+        I1.text((1, 1), sentence, font=font, fill=(255, 255, 255))
+        image.save(WORKING_IMAGE)
+        create_video(WORKING_IMAGE, get_video_path(channel))
+        
+        return get_video(channel)
+    elif mode == 'g':
+        if not can_generate_image(age):
+            return get_video(channel)
+        
+        logging.debug('HELLO %s - %s', sentence, age)
+        
+        image_path = generate_image_from_dreamstudio(sentence)
+        if image_path is not None:
+            create_video(image_path, get_video_path(channel))
+            set_sentence_data(ip_hash, age = time())
+    elif mode == 'c':
+        set_sentence_data(ip_hash, channel = data)
+
     return get_video(channel)
-  elif mode == 'g':
-    if not can_generate_image(age):
-      return get_video(channel)
-    
-    logging.debug('HELLO %s - %s', sentence, age)
-    
-    image_path = generate_image_from_dreamstudio(sentence)
-    if image_path is not None:
-      create_video(image_path, get_video_path(channel))
-      set_sentence_data(ip_hash, age = time())
-  elif mode == 'c':
-    set_sentence_data(ip_hash, channel = data)
-
-  return get_video(channel)
 
 @app.route('/dream')
 def default_route():
