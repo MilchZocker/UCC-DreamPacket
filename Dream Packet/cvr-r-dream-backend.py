@@ -17,14 +17,14 @@ app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 root_path = Path(__file__).parent.resolve().as_posix()
 
-DATA_DIR = root_path + 'app/data/'
-IMAGE_PATH = root_path + 'app/data/images/'
-DEFAULT_IMAGE = root_path + 'app/empty.png'
-WORKING_IMAGE = root_path + 'app/image.png'
-VIDEO_BASE_PATH = root_path + 'app/canvas'
+DATA_DIR =  '/app/data/'
+IMAGE_PATH =  '/app/data/images/'
+DEFAULT_IMAGE =  '/app/empty.png'
+WORKING_IMAGE =  '/app/image.png'
+VIDEO_BASE_PATH =  '/app/canvas'
 VIDEO_EXTENSION = '.mp4'
 GLOBAL_VIDEO_PATH = VIDEO_BASE_PATH + VIDEO_EXTENSION
-DEFAULT_VIDEO_PATH = root_path + 'app/empty' + VIDEO_EXTENSION
+DEFAULT_VIDEO_PATH =  '/app/empty' + VIDEO_EXTENSION
 API_KEY_ENVIRONMENT_VARIABLE = 'API_AUTH_KEY'
 
 IMAGE_SIZE = 1024
