@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y ttf-mscorefonts-installer fontconfig
 RUN apt-get install -y libsm6 libxext6 ffmpeg libfontconfig1 libxrender1 libgl1-mesa-glx
 
 # Copy repository content to container
+RUN mkdir /app
 WORKDIR /dreampacket
 COPY ["./Dream Packet/", "./"]
 
